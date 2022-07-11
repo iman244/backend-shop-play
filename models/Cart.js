@@ -30,4 +30,4 @@ connection.on("error", (error) => {
 
 const Model_cart = connection.model("Cart", Shema_cart);
 
-module.exports = Model_cart;
+module.exports = { Model_cart };

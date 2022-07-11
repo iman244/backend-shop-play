@@ -25,4 +25,4 @@ connection.on("error", (error) => {
 
 const Model_product = connection.model("Product", Shema_product);
 
-module.exports = Model_product;
+module.exports = { Model_product };

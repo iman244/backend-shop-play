@@ -33,4 +33,4 @@ connection.on("error", (error) => {
 
 const Model_order = connection.model("Order", Shema_order);
 
-module.exports = Model_order;
+module.exports = { Model_order };

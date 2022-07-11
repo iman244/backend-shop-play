@@ -1,9 +1,9 @@
 const CryptoJS = require("crypto-js");
+const jwt = require("jsonwebtoken");
 const { Model_user } = require("../models/User.js");
 
 async function signUp(request, response) {
-    const { Username, Email, Password } = request.body;
-
+    const { Username, Email } = request.body;
     try {
         const user = await Model_user.create({
             Username,
@@ -13,8 +13,19 @@ async function signUp(request, response) {
                 process.env.SEC_PASS
             ).toString(),
         });
-        response.status(201).json(user);
+        console.log("after creating");
+        const token = jwt.sign(
+            {
+                id: user._id,
+                isAdmin: user.isAdmin,
+            },
+            process.env.JWT_PASS,
+            { expiresIn: 60 * 60 }
+        );
+        const { Password, ...others } = user._doc;
+        response.status(200).json({ ...others, token });
     } catch (error) {
+        console.log(error);
         response.status(500).send(error);
     }
 }
@@ -29,8 +40,16 @@ async function signIn(request, response) {
                 process.env.SEC_PASS
             ).toString(CryptoJS.enc.Utf8);
             if (userPassword === Password.toString()) {
+                const token = jwt.sign(
+                    {
+                        id: user._id,
+                        isAdmin: user.isAdmin,
+                    },
+                    process.env.JWT_PASS,
+                    { expiresIn: 60 * 60 }
+                );
                 const { Password, ...others } = user._doc;
-                response.status(200).json(others);
+                response.status(200).json({ ...others, token });
             } else {
                 response.status(500).send("wrong credentials 1");
             }
@@ -38,6 +57,7 @@ async function signIn(request, response) {
             response.status(500).send("wrong credentials 2");
         }
     } catch (error) {
+        console.log(error);
         response.status(400).json(error);
     }
 }

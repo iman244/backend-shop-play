@@ -1,5 +1,4 @@
 const { signUp, signIn } = require("../controller/authentication");
-
 const router = require("express").Router();
 
 router.post("/signUp", signUp);
